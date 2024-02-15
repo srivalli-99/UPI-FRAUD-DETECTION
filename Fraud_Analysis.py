@@ -103,3 +103,40 @@ plt.xlabel('Transaction Type')
 plt.ylabel('Count')
 plt.xticks(rotation=45)
 plt.show()
+
+# Preprocessing
+le = LabelEncoder()
+for col in categorical_cols:
+    df[col] = le.fit_transform(df[col])
+
+# Splitting the dataset into train and test sets
+X = df.drop('isFraud', axis=1)
+y = df['isFraud']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Model Development
+rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+rf_classifier.fit(X_train, y_train)
+
+# Model Evaluation
+y_pred_train = rf_classifier.predict(X_train)
+train_accuracy = accuracy_score(y_train, y_pred_train)
+print("Training Accuracy:", train_accuracy)
+
+y_pred_test = rf_classifier.predict(X_test)
+test_accuracy = accuracy_score(y_test, y_pred_test)
+print("Test Accuracy:", test_accuracy)
+
+# Confusion Matrix
+conf_matrix = confusion_matrix(y_test, y_pred_test)
+plt.figure(figsize=(8, 6))
+sns.heatmap(conf_matrix, annot=True, cmap='Blues', fmt='g')
+plt.title('Confusion Matrix')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.show()
+
+# Classification Report
+class_report = classification_report(y_test, y_pred_test)
+print("Classification Report:")
+print(class_report)
